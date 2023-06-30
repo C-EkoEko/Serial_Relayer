@@ -15,14 +15,15 @@ namespace SerialRelayer {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public:
+		Boolean^ canCommunicate=gcnew Boolean;
 		MyForm(void)
 		{
 			InitializeComponent();
 			//
 			//TODO: Oluþturucu kodunu buraya ekle
 			//
+			canCommunicate = false;
 		}
-
 	protected:
 		/// <summary>
 		///Kullanýlan tüm kaynaklarý temizleyin.
@@ -103,6 +104,9 @@ namespace SerialRelayer {
 	private: System::Windows::Forms::Label^ label14;
 	private: System::Windows::Forms::SaveFileDialog^ saveFileDialog1;
 	private: System::Windows::Forms::Button^ btnSaveSession;
+	private: System::Windows::Forms::CheckBox^ checkBoxShowTime;
+	private: System::Windows::Forms::Label^ label15;
+	private: System::Windows::Forms::Button^ btnStartStopComm;
 
 
 
@@ -159,6 +163,7 @@ namespace SerialRelayer {
 			this->btnOpen = (gcnew System::Windows::Forms::Button());
 			this->btnClose = (gcnew System::Windows::Forms::Button());
 			this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
+			this->btnStartStopComm = (gcnew System::Windows::Forms::Button());
 			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
 			this->textBoxData = (gcnew System::Windows::Forms::TextBox());
 			this->serialPort1 = (gcnew System::IO::Ports::SerialPort(this->components));
@@ -174,6 +179,8 @@ namespace SerialRelayer {
 			this->label14 = (gcnew System::Windows::Forms::Label());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->btnSaveSession = (gcnew System::Windows::Forms::Button());
+			this->checkBoxShowTime = (gcnew System::Windows::Forms::CheckBox());
+			this->label15 = (gcnew System::Windows::Forms::Label());
 			this->groupBoxRX->SuspendLayout();
 			this->groupBoxTX->SuspendLayout();
 			this->groupBox3->SuspendLayout();
@@ -459,9 +466,9 @@ namespace SerialRelayer {
 			// 
 			// btnOpen
 			// 
-			this->btnOpen->Location = System::Drawing::Point(13, 19);
+			this->btnOpen->Location = System::Drawing::Point(4, 21);
 			this->btnOpen->Name = L"btnOpen";
-			this->btnOpen->Size = System::Drawing::Size(74, 19);
+			this->btnOpen->Size = System::Drawing::Size(53, 19);
 			this->btnOpen->TabIndex = 22;
 			this->btnOpen->Text = L"OPEN";
 			this->btnOpen->UseVisualStyleBackColor = true;
@@ -470,9 +477,9 @@ namespace SerialRelayer {
 			// btnClose
 			// 
 			this->btnClose->Enabled = false;
-			this->btnClose->Location = System::Drawing::Point(144, 19);
+			this->btnClose->Location = System::Drawing::Point(81, 21);
 			this->btnClose->Name = L"btnClose";
-			this->btnClose->Size = System::Drawing::Size(74, 19);
+			this->btnClose->Size = System::Drawing::Size(53, 19);
 			this->btnClose->TabIndex = 23;
 			this->btnClose->Text = L"CLOSE";
 			this->btnClose->UseVisualStyleBackColor = true;
@@ -480,6 +487,7 @@ namespace SerialRelayer {
 			// 
 			// groupBox3
 			// 
+			this->groupBox3->Controls->Add(this->btnStartStopComm);
 			this->groupBox3->Controls->Add(this->progressBar1);
 			this->groupBox3->Controls->Add(this->btnClose);
 			this->groupBox3->Controls->Add(this->btnOpen);
@@ -489,11 +497,24 @@ namespace SerialRelayer {
 			this->groupBox3->TabIndex = 24;
 			this->groupBox3->TabStop = false;
 			// 
+			// btnStartStopComm
+			// 
+			this->btnStartStopComm->Enabled = false;
+			this->btnStartStopComm->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(162)));
+			this->btnStartStopComm->Location = System::Drawing::Point(138, 21);
+			this->btnStartStopComm->Name = L"btnStartStopComm";
+			this->btnStartStopComm->Size = System::Drawing::Size(112, 56);
+			this->btnStartStopComm->TabIndex = 25;
+			this->btnStartStopComm->Text = L"START COMMUNICATION";
+			this->btnStartStopComm->UseVisualStyleBackColor = true;
+			this->btnStartStopComm->Click += gcnew System::EventHandler(this, &MyForm::btnStartStopComm_Click);
+			// 
 			// progressBar1
 			// 
-			this->progressBar1->Location = System::Drawing::Point(13, 56);
+			this->progressBar1->Location = System::Drawing::Point(5, 56);
 			this->progressBar1->Name = L"progressBar1";
-			this->progressBar1->Size = System::Drawing::Size(205, 21);
+			this->progressBar1->Size = System::Drawing::Size(129, 21);
 			this->progressBar1->TabIndex = 24;
 			// 
 			// textBoxData
@@ -612,11 +633,31 @@ namespace SerialRelayer {
 			this->btnSaveSession->UseVisualStyleBackColor = true;
 			this->btnSaveSession->Click += gcnew System::EventHandler(this, &MyForm::btnSaveSession_Click);
 			// 
+			// checkBoxShowTime
+			// 
+			this->checkBoxShowTime->AutoSize = true;
+			this->checkBoxShowTime->Location = System::Drawing::Point(131, 467);
+			this->checkBoxShowTime->Name = L"checkBoxShowTime";
+			this->checkBoxShowTime->Size = System::Drawing::Size(15, 14);
+			this->checkBoxShowTime->TabIndex = 34;
+			this->checkBoxShowTime->UseVisualStyleBackColor = true;
+			// 
+			// label15
+			// 
+			this->label15->AutoSize = true;
+			this->label15->Location = System::Drawing::Point(67, 468);
+			this->label15->Name = L"label15";
+			this->label15->Size = System::Drawing::Size(60, 13);
+			this->label15->TabIndex = 35;
+			this->label15->Text = L"Show Time";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(601, 493);
+			this->Controls->Add(this->label15);
+			this->Controls->Add(this->checkBoxShowTime);
 			this->Controls->Add(this->btnSaveSession);
 			this->Controls->Add(this->label14);
 			this->Controls->Add(this->checkBoxAutoScroll);
@@ -760,7 +801,7 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 	groupBoxTX->Enabled = false;
 
 	btnClose->Enabled = true;
-	
+	btnStartStopComm->Enabled = true;
 	progressBar1->Value = 100;
 }
 private: System::Void btnClose_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -784,7 +825,7 @@ private: System::Void btnClose_Click(System::Object^ sender, System::EventArgs^ 
 	groupBoxTX->Enabled = true;
 
 	btnClose->Enabled = false;
-
+	btnStartStopComm->Enabled = false;
 	progressBar1->Value = 0;
 	
 }
@@ -862,6 +903,7 @@ private: System::Void MyForm_FormClosing(System::Object^ sender, System::Windows
 	}
 	if (serialPort1->IsOpen)serialPort1->Close();
 	if (serialPort2->IsOpen)serialPort2->Close();
+	delete canCommunicate;
 	//delete serialPort1;
 	//delete serialPort2;
 }
@@ -888,14 +930,16 @@ private: System::Void disable_CheckedChanged(System::Object^ sender, System::Eve
 private: System::Void serialPort1_DataReceived(System::Object^ sender, System::IO::Ports::SerialDataReceivedEventArgs^ e) {
 	//ShowIt^ testDelegate = gcnew ShowIt(this, &MyForm::ShowData);
 	//this->BeginInvoke(testDelegate);
-	this->Invoke(gcnew System::EventHandler(this, &MyForm::ShowData));
+	if(!(canCommunicate->CompareTo(true)))this->Invoke(gcnew System::EventHandler(this, &MyForm::ShowData));
 }
 //private: System::Void ShowData() {
 private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
 	int size = Convert::ToInt16(textBoxPacketSize->Text);
 	array<Byte>^ dataIn = gcnew array<Byte>(size);
-	DateTime dt = DateTime::Now;
-
+	if (checkBoxShowTime->Checked) {
+		DateTime dt = DateTime::Now;
+		textBoxData->Text += dt.ToLongTimeString() + "." + dt.Millisecond + " ->	";
+	}
 	serialPort1->Read(dataIn, 0, size);
 	
 	//String^ dataStr = System::BitConverter::ToString(dataIn);
@@ -904,7 +948,7 @@ private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
 		textBoxData->Text +="["+System::BitConverter::ToString(dataIn)+"]";
 	}*/
 	//textBoxData->Text += "["+ByteConverter(dataIn,size)+"]\r\n";
-	textBoxData->Text += dt.ToLongTimeString()+"."+ dt.Millisecond + " ->	";
+	
 	if (checkBoxAutoScroll->Checked) {
 		for (int i = 0; i < size; i++) {
 			textBoxData->AppendText("[" + String::Format("{0:X2}", dataIn[i]) + "]");
@@ -945,6 +989,18 @@ private: System::Void saveFileDialog1_FileOk(System::Object^ sender, System::Com
 }
 private: System::Void btnSaveSession_Click(System::Object^ sender, System::EventArgs^ e) {
 
+}
+private: System::Void btnStartStopComm_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (!(canCommunicate->CompareTo(true))) {
+		canCommunicate = false;
+		btnClose->Enabled = true;
+		btnStartStopComm->Text = "START COMMUNICATION";
+	}
+	else{
+		canCommunicate = true;
+		btnClose->Enabled = false;
+		btnStartStopComm->Text = "STOP COMMUNICATION";
+	}
 }
 };
 
