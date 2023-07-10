@@ -1,11 +1,10 @@
 #pragma once
 #include "Credits.h"
+#include <msclr\marshal_cppstd.h>
 namespace SerialRelayer {
 
-	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
-	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
 	using namespace System::IO::Ports;
@@ -15,7 +14,8 @@ namespace SerialRelayer {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public:
-		Boolean^ canCommunicate=gcnew Boolean;
+		System::Boolean^ canCommunicate=gcnew System::Boolean;
+		long long int numberOfLines=0;
 		MyForm(void)
 		{
 			InitializeComponent();
@@ -621,10 +621,14 @@ namespace SerialRelayer {
 			// 
 			// saveFileDialog1
 			// 
-			this->saveFileDialog1->FileOk += gcnew System::ComponentModel::CancelEventHandler(this, &MyForm::saveFileDialog1_FileOk);
+			this->saveFileDialog1->DefaultExt = L"csv";
+			this->saveFileDialog1->Filter = L"CSV File (*.csv)|*csv";
+			this->saveFileDialog1->InitialDirectory = L"C:\\\\";
+			this->saveFileDialog1->RestoreDirectory = true;
 			// 
 			// btnSaveSession
 			// 
+			this->btnSaveSession->Enabled = false;
 			this->btnSaveSession->Location = System::Drawing::Point(257, 460);
 			this->btnSaveSession->Name = L"btnSaveSession";
 			this->btnSaveSession->Size = System::Drawing::Size(97, 24);
@@ -689,19 +693,13 @@ namespace SerialRelayer {
 #pragma endregion
 delegate void ShowIt();
 private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
-	array <String^>^ availablePorts = SerialPort::GetPortNames();
+	cli::array <System::String^>^ availablePorts = SerialPort::GetPortNames();
 	rxPort->Items->AddRange(availablePorts);
 	txPort->Items->AddRange(availablePorts);
 }
 private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e) {
 	if(!disable->Checked){
-		try {
-			if (rxPort->Text== txPort->Text) {
-				throw(true);
-			}
-		}
-
-		catch (bool arePortsSame) {
+		if (rxPort->Text== txPort->Text){
 			MessageBox::Show("Receiver and transmitter ports can not be the same!", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
@@ -711,8 +709,8 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 	{
 		try {
 			serialPort1->PortName = rxPort->Text;
-			serialPort1->BaudRate = Convert::ToInt32(rxBaudRate->Text);
-			serialPort1->DataBits = Convert::ToInt32(rxDataBits->Text);
+			serialPort1->BaudRate = System::Convert::ToInt32(rxBaudRate->Text);
+			serialPort1->DataBits = System::Convert::ToInt32(rxDataBits->Text);
 			serialPort1->StopBits = (StopBits)Enum::Parse((StopBits::typeid), rxStopBits->Text);
 			serialPort1->Parity = (Parity)Enum::Parse((Parity::typeid), rxParityBits->Text);
 		}
@@ -720,23 +718,23 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 			MessageBox::Show(err->Message, "Error on RX Port: Unauthorized Access", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
-		catch (ArgumentOutOfRangeException^ err) {
+		catch (System::ArgumentOutOfRangeException^ err) {
 			MessageBox::Show(err->Message, "Error on RX Port: Argument Out Of Range", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
-		catch (ArgumentException^ err) {
+		catch (System::ArgumentException^ err) {
 			MessageBox::Show(err->Message, "Error on RX Port: Argument", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
-		catch (IO::IOException^ err) {
+		catch (System::IO::IOException^ err) {
 			MessageBox::Show(err->Message, "Error on RX Port: IO", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
 
 		try {
-			serialPort1->ReceivedBytesThreshold = Convert::ToInt32(textBoxPacketSize->Text);
+			serialPort1->ReceivedBytesThreshold = System::Convert::ToInt32(textBoxPacketSize->Text);
 		}
-		catch (ArgumentOutOfRangeException^ err) {
+		catch (System::ArgumentOutOfRangeException^ err) {
 			MessageBox::Show(err->Message, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			serialPort1->ReceivedBytesThreshold = 1;
 			textBoxPacketSize->Text = "1";
@@ -747,8 +745,8 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 	if(!disable->Checked){
 		try {
 			serialPort2->PortName = txPort->Text;
-			serialPort2->BaudRate = Convert::ToInt32(txBaudRate->Text);
-			serialPort2->DataBits = Convert::ToInt32(txDataBits->Text);
+			serialPort2->BaudRate = System::Convert::ToInt32(txBaudRate->Text);
+			serialPort2->DataBits = System::Convert::ToInt32(txDataBits->Text);
 			serialPort2->StopBits = (StopBits)Enum::Parse((StopBits::typeid), txStopBits->Text);
 			serialPort2->Parity = (Parity)Enum::Parse((Parity::typeid), txParityBits->Text);
 		}
@@ -756,15 +754,15 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 			MessageBox::Show(err->Message, "Error on TX Port: Unauthorized Access", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
-		catch (ArgumentOutOfRangeException^ err) {
+		catch (System::ArgumentOutOfRangeException^ err) {
 			MessageBox::Show(err->Message, "Error on TX Port: Argument Out Of Range", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
-		catch (ArgumentException^ err) {
+		catch (System::ArgumentException^ err) {
 			MessageBox::Show(err->Message, "Error on TX Port: Argument", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
-		catch (IO::IOException^ err) {
+		catch (System::IO::IOException^ err) {
 			MessageBox::Show(err->Message, "Error on TX Port: IO", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			return;
 		}
@@ -802,6 +800,7 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 
 	btnClose->Enabled = true;
 	btnStartStopComm->Enabled = true;
+	btnSaveSession->Enabled = true;
 	progressBar1->Value = 100;
 }
 private: System::Void btnClose_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -826,8 +825,8 @@ private: System::Void btnClose_Click(System::Object^ sender, System::EventArgs^ 
 
 	btnClose->Enabled = false;
 	btnStartStopComm->Enabled = false;
+	btnSaveSession->Enabled = false;
 	progressBar1->Value = 0;
-	
 }
 private: System::Void sameAsReceiver_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 	if (sameAsReceiver->Checked) {
@@ -850,7 +849,7 @@ private: System::Void sameAsReceiver_CheckedChanged(System::Object^ sender, Syst
 	}
 }
 private: System::Void btnSearchPorts_Click(System::Object^ sender, System::EventArgs^ e) {
-	array <String^>^ availablePorts = SerialPort::GetPortNames();
+	cli::array <System::String^>^ availablePorts = SerialPort::GetPortNames();
 	rxPort->Text="";
 	txPort->Text="";
 	rxPort->Items->Clear();
@@ -926,18 +925,14 @@ private: System::Void disable_CheckedChanged(System::Object^ sender, System::Eve
 		sameAsReceiver->Enabled = true;
 	}
 }
-
 private: System::Void serialPort1_DataReceived(System::Object^ sender, System::IO::Ports::SerialDataReceivedEventArgs^ e) {
-	//ShowIt^ testDelegate = gcnew ShowIt(this, &MyForm::ShowData);
-	//this->BeginInvoke(testDelegate);
-	if(!(canCommunicate->CompareTo(true)))this->Invoke(gcnew System::EventHandler(this, &MyForm::ShowData));
+	if(!(canCommunicate->CompareTo(true)))this->Invoke(gcnew System::EventHandler(this, &MyForm::ShowData));//artýk gerekmeyebilir kontrol et
 }
-//private: System::Void ShowData() {
 private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
-	int size = Convert::ToInt16(textBoxPacketSize->Text);
-	array<Byte>^ dataIn = gcnew array<Byte>(size);
+	int size = System::Convert::ToInt16(textBoxPacketSize->Text);
+	cli::array<System::Byte>^ dataIn = gcnew cli::array<System::Byte>(size);
 	if (checkBoxShowTime->Checked) {
-		DateTime dt = DateTime::Now;
+		System::DateTime dt = System::DateTime::Now;
 		textBoxData->Text += dt.ToLongTimeString() + "." + dt.Millisecond + " ->	";
 	}
 	serialPort1->Read(dataIn, 0, size);
@@ -951,13 +946,17 @@ private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
 	
 	if (checkBoxAutoScroll->Checked) {
 		for (int i = 0; i < size; i++) {
-			textBoxData->AppendText("[" + String::Format("{0:X2}", dataIn[i]) + "]");
+			//textBoxData->AppendText("[");
+			textBoxData->Text += System::String::Format("{0:X2}", dataIn[i]);
+			//textBoxData->Text += "]";
 		}
 		textBoxData->AppendText("\r\n");
 	}
 	else {
 		for (int i = 0; i < size; i++) {
-			textBoxData->Text += "[" + String::Format("{0:X2}", dataIn[i]) + "]";
+			//textBoxData->Text += "[";
+			textBoxData->Text += System::String::Format("{0:X2}", dataIn[i]);
+			//textBoxData->Text += "]";
 		}
 		textBoxData->Text += "\r\n";
 	}
@@ -968,13 +967,12 @@ private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
 	}
 	
 }
-private: System::Void SendData(array<Byte>^% dataIn, int size) {
+private: System::Void SendData(cli::array<System::Byte>^% dataIn, int size) {
 	serialPort2->Write(dataIn,0,size);
 }
 private: System::Void textBoxData_TextChanged(System::Object^ sender, System::EventArgs^ e) {
 }
-
-/*private: System::String^ ByteConverter(array<Byte>^% data, int size) {
+/*private: System::String^ ByteConverter(cli::array<Byte>^% data, int size) {
 	String^ result = "";
 	for(int i=0;i<size;i++)
 	{
@@ -985,23 +983,34 @@ private: System::Void textBoxData_TextChanged(System::Object^ sender, System::Ev
 private: System::Void btnClearOutput_Click(System::Object^ sender, System::EventArgs^ e) {
 	textBoxData->Clear();
 }
-private: System::Void saveFileDialog1_FileOk(System::Object^ sender, System::ComponentModel::CancelEventArgs^ e) {
-}
 private: System::Void btnSaveSession_Click(System::Object^ sender, System::EventArgs^ e) {
-
+	//this->Invoke(gcnew System::EventHandler(this, &MyForm::SaveExcel));
+	//MessageBox::Show(Convert::ToString(SaveExcel()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+	if (saveFileDialog1->ShowDialog() == Windows::Forms::DialogResult::OK)
+	{
+		//MessageBox::Show(saveFileDialog1->FileName, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		SaveExcel(msclr::interop::marshal_as<std::string>(saveFileDialog1->FileName), msclr::interop::marshal_as<std::string>(textBoxData->Text));
+	}
 }
+private: void SaveExcel(std::string filePath, std::string &text);
+
 private: System::Void btnStartStopComm_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (!(canCommunicate->CompareTo(true))) {
 		canCommunicate = false;
 		btnClose->Enabled = true;
+		btnSaveSession->Enabled = true;
 		btnStartStopComm->Text = "START COMMUNICATION";
 	}
 	else{
 		canCommunicate = true;
 		btnClose->Enabled = false;
+		btnSaveSession->Enabled = false;
 		btnStartStopComm->Text = "STOP COMMUNICATION";
 	}
 }
+
+
 };
+
 
 }
