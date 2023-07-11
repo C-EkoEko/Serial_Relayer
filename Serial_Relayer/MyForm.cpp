@@ -17,11 +17,12 @@ void main(){ //array<String^>^ args
 void SerialRelayer::MyForm::SaveExcel(std::string filePath, std::string &text) {
 	std::ofstream excelFile;
 	excelFile.open(filePath,std::ios::trunc);
-	excelFile << ";";
-	for (int i = 0;text[i] != '\0';i++) {
-		if (text[i] != '\n')excelFile <<text[i];
-		else excelFile << ';';
-	}
+	//int listDataSize = incomingData->Count;
+	//int listTimeSize = timeStamps->Count;
+	//for (int i = 0;i< listDataSize;i++) {
+		//if(i<listTimeSize)excelFile << msclr::interop::marshal_as<std::string>(timeStamps[i]);
+		//excelFile<<';'<< msclr::interop::marshal_as<std::string>(incomingData[i]) <<'\n';
+	//}
 	excelFile.close();
 	return;
 }

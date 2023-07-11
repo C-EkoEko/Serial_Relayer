@@ -15,13 +15,18 @@ namespace SerialRelayer {
 	{
 	public:
 		System::Boolean^ canCommunicate=gcnew System::Boolean;
-		long long int numberOfLines=0;
+		System::Boolean^ listsFull= gcnew System::Boolean;
+		System::Collections::Generic::List<String^>^ timeStamps = gcnew System::Collections::Generic::List<String^>;
+		System::Collections::Generic::List<String^>^ incomingData = gcnew System::Collections::Generic::List<String^>;
+		Int16 packetSize=1;
 		MyForm(void)
 		{
 			InitializeComponent();
 			//
 			//TODO: Oluþturucu kodunu buraya ekle
 			//
+			packetSize = 1;
+			listsFull = false;
 			canCommunicate = false;
 		}
 	protected:
@@ -37,17 +42,9 @@ namespace SerialRelayer {
 		}
 	private: System::Windows::Forms::ComboBox^ rxPort;
 	private: System::Windows::Forms::ComboBox^ rxBaudRate;
-
 	private: System::Windows::Forms::ComboBox^ rxDataBits;
 	private: System::Windows::Forms::ComboBox^ rxStopBits;
 	private: System::Windows::Forms::ComboBox^ rxParityBits;
-	protected:
-
-	protected:
-
-
-
-
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Label^ label3;
@@ -55,8 +52,6 @@ namespace SerialRelayer {
 	private: System::Windows::Forms::Label^ label5;
 	private: System::Windows::Forms::GroupBox^ groupBoxRX;
 	private: System::Windows::Forms::GroupBox^ groupBoxTX;
-
-
 	private: System::Windows::Forms::Label^ label6;
 	private: System::Windows::Forms::Label^ label7;
 	private: System::Windows::Forms::Label^ label8;
@@ -65,23 +60,13 @@ namespace SerialRelayer {
 	private: System::Windows::Forms::ComboBox^ txParityBits;
 
 	private: System::Windows::Forms::ComboBox^ txStopBits;
-
 	private: System::Windows::Forms::ComboBox^ txDataBits;
-
 	private: System::Windows::Forms::ComboBox^ txBaudRate;
-
 	private: System::Windows::Forms::ComboBox^ txPort;
 	private: System::Windows::Forms::Button^ btnOpen;
 	private: System::Windows::Forms::Button^ btnClose;
-
-
-
 	private: System::Windows::Forms::GroupBox^ groupBox3;
 	private: System::Windows::Forms::ProgressBar^ progressBar1;
-
-
-
-
 	private: System::Windows::Forms::TextBox^ textBoxData;
 	private: System::IO::Ports::SerialPort^ serialPort1;
 	private: System::IO::Ports::SerialPort^ serialPort2;
@@ -96,27 +81,17 @@ namespace SerialRelayer {
 
 	private: System::Windows::Forms::Label^ label12;
 	private: System::Windows::Forms::GroupBox^ groupBoxPacketSize;
+	private: System::Windows::Forms::Button^ btnClearSavedData;
 
 	private: System::Windows::Forms::Label^ label13;
 	private: System::Windows::Forms::CheckBox^ disable;
-	private: System::Windows::Forms::Button^ btnClearOutput;
-	private: System::Windows::Forms::CheckBox^ checkBoxAutoScroll;
-	private: System::Windows::Forms::Label^ label14;
+
+
 	private: System::Windows::Forms::SaveFileDialog^ saveFileDialog1;
 	private: System::Windows::Forms::Button^ btnSaveSession;
-	private: System::Windows::Forms::CheckBox^ checkBoxShowTime;
-	private: System::Windows::Forms::Label^ label15;
+
+
 	private: System::Windows::Forms::Button^ btnStartStopComm;
-
-
-
-
-	protected:
-
-
-	protected:
-
-	protected:
 	private: System::ComponentModel::IContainer^ components;
 
 	private:
@@ -174,13 +149,9 @@ namespace SerialRelayer {
 			this->textBoxPacketSize = (gcnew System::Windows::Forms::TextBox());
 			this->label12 = (gcnew System::Windows::Forms::Label());
 			this->groupBoxPacketSize = (gcnew System::Windows::Forms::GroupBox());
-			this->btnClearOutput = (gcnew System::Windows::Forms::Button());
-			this->checkBoxAutoScroll = (gcnew System::Windows::Forms::CheckBox());
-			this->label14 = (gcnew System::Windows::Forms::Label());
+			this->btnClearSavedData = (gcnew System::Windows::Forms::Button());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->btnSaveSession = (gcnew System::Windows::Forms::Button());
-			this->checkBoxShowTime = (gcnew System::Windows::Forms::CheckBox());
-			this->label15 = (gcnew System::Windows::Forms::Label());
 			this->groupBoxRX->SuspendLayout();
 			this->groupBoxTX->SuspendLayout();
 			this->groupBox3->SuspendLayout();
@@ -466,7 +437,7 @@ namespace SerialRelayer {
 			// 
 			// btnOpen
 			// 
-			this->btnOpen->Location = System::Drawing::Point(4, 21);
+			this->btnOpen->Location = System::Drawing::Point(6, 21);
 			this->btnOpen->Name = L"btnOpen";
 			this->btnOpen->Size = System::Drawing::Size(53, 19);
 			this->btnOpen->TabIndex = 22;
@@ -526,7 +497,6 @@ namespace SerialRelayer {
 			this->textBoxData->ScrollBars = System::Windows::Forms::ScrollBars::Both;
 			this->textBoxData->Size = System::Drawing::Size(549, 112);
 			this->textBoxData->TabIndex = 26;
-			this->textBoxData->TextChanged += gcnew System::EventHandler(this, &MyForm::textBoxData_TextChanged);
 			// 
 			// serialPort1
 			// 
@@ -589,35 +559,15 @@ namespace SerialRelayer {
 			this->groupBoxPacketSize->TabIndex = 31;
 			this->groupBoxPacketSize->TabStop = false;
 			// 
-			// btnClearOutput
+			// btnClearSavedData
 			// 
-			this->btnClearOutput->Location = System::Drawing::Point(370, 460);
-			this->btnClearOutput->Name = L"btnClearOutput";
-			this->btnClearOutput->Size = System::Drawing::Size(97, 24);
-			this->btnClearOutput->TabIndex = 32;
-			this->btnClearOutput->Text = L"Clear Output";
-			this->btnClearOutput->UseVisualStyleBackColor = true;
-			this->btnClearOutput->Click += gcnew System::EventHandler(this, &MyForm::btnClearOutput_Click);
-			// 
-			// checkBoxAutoScroll
-			// 
-			this->checkBoxAutoScroll->AutoSize = true;
-			this->checkBoxAutoScroll->Checked = true;
-			this->checkBoxAutoScroll->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->checkBoxAutoScroll->Location = System::Drawing::Point(226, 467);
-			this->checkBoxAutoScroll->Name = L"checkBoxAutoScroll";
-			this->checkBoxAutoScroll->Size = System::Drawing::Size(15, 14);
-			this->checkBoxAutoScroll->TabIndex = 19;
-			this->checkBoxAutoScroll->UseVisualStyleBackColor = true;
-			// 
-			// label14
-			// 
-			this->label14->AutoSize = true;
-			this->label14->Location = System::Drawing::Point(162, 466);
-			this->label14->Name = L"label14";
-			this->label14->Size = System::Drawing::Size(58, 13);
-			this->label14->TabIndex = 19;
-			this->label14->Text = L"Auto Scroll";
+			this->btnClearSavedData->Location = System::Drawing::Point(365, 460);
+			this->btnClearSavedData->Name = L"btnClearSavedData";
+			this->btnClearSavedData->Size = System::Drawing::Size(107, 24);
+			this->btnClearSavedData->TabIndex = 32;
+			this->btnClearSavedData->Text = L"Clear Saved Data";
+			this->btnClearSavedData->UseVisualStyleBackColor = true;
+			this->btnClearSavedData->Click += gcnew System::EventHandler(this, &MyForm::btnClearSavedData_Click);
 			// 
 			// saveFileDialog1
 			// 
@@ -637,35 +587,13 @@ namespace SerialRelayer {
 			this->btnSaveSession->UseVisualStyleBackColor = true;
 			this->btnSaveSession->Click += gcnew System::EventHandler(this, &MyForm::btnSaveSession_Click);
 			// 
-			// checkBoxShowTime
-			// 
-			this->checkBoxShowTime->AutoSize = true;
-			this->checkBoxShowTime->Location = System::Drawing::Point(131, 467);
-			this->checkBoxShowTime->Name = L"checkBoxShowTime";
-			this->checkBoxShowTime->Size = System::Drawing::Size(15, 14);
-			this->checkBoxShowTime->TabIndex = 34;
-			this->checkBoxShowTime->UseVisualStyleBackColor = true;
-			// 
-			// label15
-			// 
-			this->label15->AutoSize = true;
-			this->label15->Location = System::Drawing::Point(67, 468);
-			this->label15->Name = L"label15";
-			this->label15->Size = System::Drawing::Size(60, 13);
-			this->label15->TabIndex = 35;
-			this->label15->Text = L"Show Time";
-			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(601, 493);
-			this->Controls->Add(this->label15);
-			this->Controls->Add(this->checkBoxShowTime);
 			this->Controls->Add(this->btnSaveSession);
-			this->Controls->Add(this->label14);
-			this->Controls->Add(this->checkBoxAutoScroll);
-			this->Controls->Add(this->btnClearOutput);
+			this->Controls->Add(this->btnClearSavedData);
 			this->Controls->Add(this->groupBoxPacketSize);
 			this->Controls->Add(this->btnCredits);
 			this->Controls->Add(this->btnResetSettings);
@@ -696,6 +624,8 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 	cli::array <System::String^>^ availablePorts = SerialPort::GetPortNames();
 	rxPort->Items->AddRange(availablePorts);
 	txPort->Items->AddRange(availablePorts);
+	/*MessageBox::Show(Convert::ToString(timeStamps->Capacity), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+	MessageBox::Show(Convert::ToString(incomingData->Capacity), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);*/
 }
 private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e) {
 	if(!disable->Checked){
@@ -732,7 +662,8 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 		}
 
 		try {
-			serialPort1->ReceivedBytesThreshold = System::Convert::ToInt32(textBoxPacketSize->Text);
+			serialPort1->ReceivedBytesThreshold = System::Convert::ToInt16(textBoxPacketSize->Text);
+			packetSize = System::Convert::ToInt16(textBoxPacketSize->Text);
 		}
 		catch (System::ArgumentOutOfRangeException^ err) {
 			MessageBox::Show(err->Message, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
@@ -902,7 +833,12 @@ private: System::Void MyForm_FormClosing(System::Object^ sender, System::Windows
 	}
 	if (serialPort1->IsOpen)serialPort1->Close();
 	if (serialPort2->IsOpen)serialPort2->Close();
+	timeStamps->Clear();
+	incomingData->Clear();
 	delete canCommunicate;
+	delete listsFull;
+	delete timeStamps;
+	delete incomingData;
 	//delete serialPort1;
 	//delete serialPort2;
 }
@@ -926,51 +862,51 @@ private: System::Void disable_CheckedChanged(System::Object^ sender, System::Eve
 	}
 }
 private: System::Void serialPort1_DataReceived(System::Object^ sender, System::IO::Ports::SerialDataReceivedEventArgs^ e) {
-	if(!(canCommunicate->CompareTo(true)))this->Invoke(gcnew System::EventHandler(this, &MyForm::ShowData));//artýk gerekmeyebilir kontrol et
+	if(!(canCommunicate->CompareTo(true))&& !(listsFull->CompareTo(false)))this->Invoke(gcnew System::EventHandler(this, &MyForm::ShowData));//artýk gerekmeyebilir kontrol et
 }
 private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
-	int size = System::Convert::ToInt16(textBoxPacketSize->Text);
-	cli::array<System::Byte>^ dataIn = gcnew cli::array<System::Byte>(size);
-	if (checkBoxShowTime->Checked) {
-		System::DateTime dt = System::DateTime::Now;
-		textBoxData->Text += dt.ToLongTimeString() + "." + dt.Millisecond + " ->	";
-	}
-	serialPort1->Read(dataIn, 0, size);
-	
-	//String^ dataStr = System::BitConverter::ToString(dataIn);
-	//String^ dataStr = ByteConverter(dataIn, size);
-	/*for (int i = 0; i < size; i++) {
-		textBoxData->Text +="["+System::BitConverter::ToString(dataIn)+"]";
+	cli::array<System::Byte>^ dataIn = gcnew cli::array<System::Byte>(packetSize);
+
+	System::DateTime currTime = System::DateTime::Now;
+	System::String^ tempTimeStr= currTime.ToLongTimeString() + "." + currTime.Millisecond;
+	System::String^ tempDataStr;
+
+	/*if (checkBoxShowTime->Checked) {
+		textBoxData->Text += tempStr + " ->	";
 	}*/
-	//textBoxData->Text += "["+ByteConverter(dataIn,size)+"]\r\n";
-	
-	if (checkBoxAutoScroll->Checked) {
-		for (int i = 0; i < size; i++) {
-			//textBoxData->AppendText("[");
-			textBoxData->Text += System::String::Format("{0:X2}", dataIn[i]);
-			//textBoxData->Text += "]";
-		}
-		textBoxData->AppendText("\r\n");
+	serialPort1->Read(dataIn, 0, packetSize);
+	for (int i = 0; i < packetSize; i++) {
+		//textBoxData->AppendText("[");
+		tempDataStr += System::String::Format("{0:X2}", dataIn[i]);
+		//textBoxData->Text += "]";
 	}
-	else {
-		for (int i = 0; i < size; i++) {
-			//textBoxData->Text += "[";
-			textBoxData->Text += System::String::Format("{0:X2}", dataIn[i]);
-			//textBoxData->Text += "]";
-		}
-		textBoxData->Text += "\r\n";
+	textBoxData->Text=tempDataStr;
+	try {
+		timeStamps->Add(tempTimeStr);
+		incomingData->Add(tempDataStr);
 	}
-	
+	catch (System::ArgumentOutOfRangeException^ err) {
+		listsFull = true;
+		MessageBox::Show(err->Message, "Error on Incoming Data: Argument Out Of Range", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		return;
+	}
+	catch (System::OutOfMemoryException^ err) {
+		listsFull = true;
+		MessageBox::Show(err->Message, "Error on Incoming Data: Out of Memory. Please Clear Output", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		return;
+	}
 
 	if (!(disable->Checked)) {
-		SendData(dataIn,size);
+		SendData(dataIn, packetSize);
 	}
+	delete dataIn;
+	delete currTime;
+	delete tempTimeStr;
+	delete tempDataStr;
 	
 }
 private: System::Void SendData(cli::array<System::Byte>^% dataIn, int size) {
 	serialPort2->Write(dataIn,0,size);
-}
-private: System::Void textBoxData_TextChanged(System::Object^ sender, System::EventArgs^ e) {
 }
 /*private: System::String^ ByteConverter(cli::array<Byte>^% data, int size) {
 	String^ result = "";
@@ -980,8 +916,17 @@ private: System::Void textBoxData_TextChanged(System::Object^ sender, System::Ev
 	}
 	return result;
 }*/
-private: System::Void btnClearOutput_Click(System::Object^ sender, System::EventArgs^ e) {
+private: System::Void btnClearSavedData_Click(System::Object^ sender, System::EventArgs^ e) {
+	//MessageBox::Show(Convert::ToString(incomingData->Count), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+	//MessageBox::Show(Convert::ToString(incomingData->Capacity), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 	textBoxData->Clear();
+	timeStamps->Clear();
+	incomingData->Clear();
+	incomingData = gcnew System::Collections::Generic::List<String^>;
+	timeStamps = gcnew System::Collections::Generic::List<String^>;
+	listsFull = false;
+	//MessageBox::Show(Convert::ToString(incomingData->Count), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+	//MessageBox::Show(Convert::ToString(incomingData->Capacity), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 }
 private: System::Void btnSaveSession_Click(System::Object^ sender, System::EventArgs^ e) {
 	//this->Invoke(gcnew System::EventHandler(this, &MyForm::SaveExcel));
@@ -993,7 +938,6 @@ private: System::Void btnSaveSession_Click(System::Object^ sender, System::Event
 	}
 }
 private: void SaveExcel(std::string filePath, std::string &text);
-
 private: System::Void btnStartStopComm_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (!(canCommunicate->CompareTo(true))) {
 		canCommunicate = false;
@@ -1008,8 +952,6 @@ private: System::Void btnStartStopComm_Click(System::Object^ sender, System::Eve
 		btnStartStopComm->Text = "STOP COMMUNICATION";
 	}
 }
-
-
 };
 
 
