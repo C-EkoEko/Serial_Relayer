@@ -18,14 +18,14 @@ namespace SerialRelayer {
 		System::Boolean^ listsFull= gcnew System::Boolean;
 		System::Collections::Generic::List<String^>^ timeStamps = gcnew System::Collections::Generic::List<String^>;
 		System::Collections::Generic::List<String^>^ incomingData = gcnew System::Collections::Generic::List<String^>;
-		Int16 packetSize=1;
+		int packetSize=1;
 		MyForm(void)
 		{
 			InitializeComponent();
 			//
 			//TODO: Oluþturucu kodunu buraya ekle
 			//
-			packetSize = 1;
+			//packetSize = 1;
 			listsFull = false;
 			canCommunicate = false;
 		}
