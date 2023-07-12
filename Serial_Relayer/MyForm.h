@@ -18,7 +18,10 @@ namespace SerialRelayer {
 		System::Boolean^ listsFull= gcnew System::Boolean;
 		System::Collections::Generic::List<String^>^ timeStamps = gcnew System::Collections::Generic::List<String^>;
 		System::Collections::Generic::List<String^>^ incomingData = gcnew System::Collections::Generic::List<String^>;
-		int packetSize=1;
+	private: System::Windows::Forms::CheckBox^ checkBoxDisableDataRecording;
+	private: System::Windows::Forms::Label^ label14;
+	public:
+		int packetSize = 1;
 		MyForm(void)
 		{
 			InitializeComponent();
@@ -152,6 +155,8 @@ namespace SerialRelayer {
 			this->btnClearSavedData = (gcnew System::Windows::Forms::Button());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->btnSaveSession = (gcnew System::Windows::Forms::Button());
+			this->checkBoxDisableDataRecording = (gcnew System::Windows::Forms::CheckBox());
+			this->label14 = (gcnew System::Windows::Forms::Label());
 			this->groupBoxRX->SuspendLayout();
 			this->groupBoxTX->SuspendLayout();
 			this->groupBox3->SuspendLayout();
@@ -561,7 +566,7 @@ namespace SerialRelayer {
 			// 
 			// btnClearSavedData
 			// 
-			this->btnClearSavedData->Location = System::Drawing::Point(365, 460);
+			this->btnClearSavedData->Location = System::Drawing::Point(366, 460);
 			this->btnClearSavedData->Name = L"btnClearSavedData";
 			this->btnClearSavedData->Size = System::Drawing::Size(107, 24);
 			this->btnClearSavedData->TabIndex = 32;
@@ -579,7 +584,7 @@ namespace SerialRelayer {
 			// btnSaveSession
 			// 
 			this->btnSaveSession->Enabled = false;
-			this->btnSaveSession->Location = System::Drawing::Point(257, 460);
+			this->btnSaveSession->Location = System::Drawing::Point(259, 460);
 			this->btnSaveSession->Name = L"btnSaveSession";
 			this->btnSaveSession->Size = System::Drawing::Size(97, 24);
 			this->btnSaveSession->TabIndex = 33;
@@ -587,11 +592,32 @@ namespace SerialRelayer {
 			this->btnSaveSession->UseVisualStyleBackColor = true;
 			this->btnSaveSession->Click += gcnew System::EventHandler(this, &MyForm::btnSaveSession_Click);
 			// 
+			// checkBoxDisableDataRecording
+			// 
+			this->checkBoxDisableDataRecording->AutoSize = true;
+			this->checkBoxDisableDataRecording->Location = System::Drawing::Point(233, 465);
+			this->checkBoxDisableDataRecording->Name = L"checkBoxDisableDataRecording";
+			this->checkBoxDisableDataRecording->Size = System::Drawing::Size(15, 14);
+			this->checkBoxDisableDataRecording->TabIndex = 34;
+			this->checkBoxDisableDataRecording->UseVisualStyleBackColor = true;
+			this->checkBoxDisableDataRecording->CheckedChanged += gcnew System::EventHandler(this, &MyForm::checkBoxDisableDataRecording_CheckedChanged);
+			// 
+			// label14
+			// 
+			this->label14->AutoSize = true;
+			this->label14->Location = System::Drawing::Point(111, 465);
+			this->label14->Name = L"label14";
+			this->label14->Size = System::Drawing::Size(120, 13);
+			this->label14->TabIndex = 35;
+			this->label14->Text = L"Disable Data Recording";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(601, 493);
+			this->Controls->Add(this->label14);
+			this->Controls->Add(this->checkBoxDisableDataRecording);
 			this->Controls->Add(this->btnSaveSession);
 			this->Controls->Add(this->btnClearSavedData);
 			this->Controls->Add(this->groupBoxPacketSize);
@@ -731,7 +757,7 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 
 	btnClose->Enabled = true;
 	btnStartStopComm->Enabled = true;
-	btnSaveSession->Enabled = true;
+	if (checkBoxDisableDataRecording->Checked == false)btnSaveSession->Enabled = true;
 	progressBar1->Value = 100;
 }
 private: System::Void btnClose_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -882,8 +908,10 @@ private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
 	}
 	textBoxData->Text=tempDataStr;
 	try {
-		timeStamps->Add(tempTimeStr);
-		incomingData->Add(tempDataStr);
+		if (checkBoxDisableDataRecording->Checked==false) {
+			timeStamps->Add(tempTimeStr);
+			incomingData->Add(tempDataStr);
+		}
 	}
 	catch (System::ArgumentOutOfRangeException^ err) {
 		listsFull = true;
@@ -937,19 +965,27 @@ private: System::Void btnSaveSession_Click(System::Object^ sender, System::Event
 		SaveExcel(msclr::interop::marshal_as<std::string>(saveFileDialog1->FileName), msclr::interop::marshal_as<std::string>(textBoxData->Text));
 	}
 }
-private: void SaveExcel(std::string filePath, std::string &text);
+private: void SaveExcel(std::string &filePath, std::string &text);
 private: System::Void btnStartStopComm_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (!(canCommunicate->CompareTo(true))) {
 		canCommunicate = false;
 		btnClose->Enabled = true;
-		btnSaveSession->Enabled = true;
+		if (checkBoxDisableDataRecording->Checked == false)btnSaveSession->Enabled = true;
+		checkBoxDisableDataRecording->Enabled = true;
 		btnStartStopComm->Text = "START COMMUNICATION";
 	}
 	else{
 		canCommunicate = true;
 		btnClose->Enabled = false;
 		btnSaveSession->Enabled = false;
+		checkBoxDisableDataRecording->Enabled = false;
 		btnStartStopComm->Text = "STOP COMMUNICATION";
+	}
+}
+private: System::Void checkBoxDisableDataRecording_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	if (serialPort1->IsOpen) {
+		if (checkBoxDisableDataRecording->Checked)btnSaveSession->Enabled = false;
+		else btnSaveSession->Enabled = true;
 	}
 }
 };
