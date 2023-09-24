@@ -129,10 +129,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ByteOrderForm.cpp" />
     <ClCompile Include="Credits.cpp" />
     <ClCompile Include="MyForm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ByteOrderForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Credits.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -144,6 +148,9 @@
     <ClInclude Include="resource2.h" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ByteOrderForm.resx">
+      <DependentUpon>ByteOrderForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Credits.resx">
       <DependentUpon>Credits.h</DependentUpon>
     </EmbeddedResource>

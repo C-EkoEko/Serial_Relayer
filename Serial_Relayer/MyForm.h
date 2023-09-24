@@ -1,5 +1,6 @@
 #pragma once
 #include "Credits.h"
+#include "ByteOrderForm.h"
 #include <msclr\marshal_cppstd.h>
 namespace SerialRelayer {
 
@@ -18,8 +19,13 @@ namespace SerialRelayer {
 		System::Boolean^ listsFull= gcnew System::Boolean;
 		System::Collections::Generic::List<String^>^ timeStamps = gcnew System::Collections::Generic::List<String^>;
 		System::Collections::Generic::List<String^>^ incomingData = gcnew System::Collections::Generic::List<String^>;
+		System::Collections::Generic::List<String^>^ columnNames= gcnew System::Collections::Generic::List<String^>;
+		System::Collections::Generic::List<int>^ columnSizes = gcnew System::Collections::Generic::List<int>;
+
 	private: System::Windows::Forms::CheckBox^ checkBoxDisableDataRecording;
 	private: System::Windows::Forms::Label^ label14;
+	private: System::Windows::Forms::Button^ btnEditByteSections;
+	private: ByteOrderForm^ byteForm;
 	public:
 		int packetSize = 1;
 		MyForm(void)
@@ -31,6 +37,7 @@ namespace SerialRelayer {
 			//packetSize = 1;
 			listsFull = false;
 			canCommunicate = false;
+			byteForm = gcnew ByteOrderForm(columnNames, columnSizes);
 		}
 	protected:
 		/// <summary>
@@ -80,10 +87,10 @@ namespace SerialRelayer {
 
 	private: System::Windows::Forms::Button^ btnResetSettings;
 	private: System::Windows::Forms::Button^ btnCredits;
-	private: System::Windows::Forms::TextBox^ textBoxPacketSize;
 
-	private: System::Windows::Forms::Label^ label12;
-	private: System::Windows::Forms::GroupBox^ groupBoxPacketSize;
+
+
+
 	private: System::Windows::Forms::Button^ btnClearSavedData;
 
 	private: System::Windows::Forms::Label^ label13;
@@ -149,18 +156,15 @@ namespace SerialRelayer {
 			this->btnSearchPorts = (gcnew System::Windows::Forms::Button());
 			this->btnResetSettings = (gcnew System::Windows::Forms::Button());
 			this->btnCredits = (gcnew System::Windows::Forms::Button());
-			this->textBoxPacketSize = (gcnew System::Windows::Forms::TextBox());
-			this->label12 = (gcnew System::Windows::Forms::Label());
-			this->groupBoxPacketSize = (gcnew System::Windows::Forms::GroupBox());
 			this->btnClearSavedData = (gcnew System::Windows::Forms::Button());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->btnSaveSession = (gcnew System::Windows::Forms::Button());
 			this->checkBoxDisableDataRecording = (gcnew System::Windows::Forms::CheckBox());
 			this->label14 = (gcnew System::Windows::Forms::Label());
+			this->btnEditByteSections = (gcnew System::Windows::Forms::Button());
 			this->groupBoxRX->SuspendLayout();
 			this->groupBoxTX->SuspendLayout();
 			this->groupBox3->SuspendLayout();
-			this->groupBoxPacketSize->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// rxPort
@@ -265,6 +269,7 @@ namespace SerialRelayer {
 			// 
 			// groupBoxRX
 			// 
+			this->groupBoxRX->Controls->Add(this->btnEditByteSections);
 			this->groupBoxRX->Controls->Add(this->label5);
 			this->groupBoxRX->Controls->Add(this->label4);
 			this->groupBoxRX->Controls->Add(this->label3);
@@ -277,7 +282,7 @@ namespace SerialRelayer {
 			this->groupBoxRX->Controls->Add(this->rxPort);
 			this->groupBoxRX->Location = System::Drawing::Point(30, 16);
 			this->groupBoxRX->Name = L"groupBoxRX";
-			this->groupBoxRX->Size = System::Drawing::Size(254, 185);
+			this->groupBoxRX->Size = System::Drawing::Size(254, 205);
 			this->groupBoxRX->TabIndex = 20;
 			this->groupBoxRX->TabStop = false;
 			this->groupBoxRX->Text = L"Receiver Port";
@@ -500,7 +505,7 @@ namespace SerialRelayer {
 			this->textBoxData->Name = L"textBoxData";
 			this->textBoxData->ReadOnly = true;
 			this->textBoxData->ScrollBars = System::Windows::Forms::ScrollBars::Both;
-			this->textBoxData->Size = System::Drawing::Size(549, 112);
+			this->textBoxData->Size = System::Drawing::Size(549, 78);
 			this->textBoxData->TabIndex = 26;
 			// 
 			// serialPort1
@@ -509,7 +514,7 @@ namespace SerialRelayer {
 			// 
 			// btnSearchPorts
 			// 
-			this->btnSearchPorts->Location = System::Drawing::Point(30, 268);
+			this->btnSearchPorts->Location = System::Drawing::Point(30, 253);
 			this->btnSearchPorts->Name = L"btnSearchPorts";
 			this->btnSearchPorts->Size = System::Drawing::Size(116, 59);
 			this->btnSearchPorts->TabIndex = 27;
@@ -519,7 +524,7 @@ namespace SerialRelayer {
 			// 
 			// btnResetSettings
 			// 
-			this->btnResetSettings->Location = System::Drawing::Point(168, 268);
+			this->btnResetSettings->Location = System::Drawing::Point(168, 253);
 			this->btnResetSettings->Name = L"btnResetSettings";
 			this->btnResetSettings->Size = System::Drawing::Size(116, 59);
 			this->btnResetSettings->TabIndex = 28;
@@ -529,7 +534,7 @@ namespace SerialRelayer {
 			// 
 			// btnCredits
 			// 
-			this->btnCredits->Location = System::Drawing::Point(483, 460);
+			this->btnCredits->Location = System::Drawing::Point(483, 430);
 			this->btnCredits->Name = L"btnCredits";
 			this->btnCredits->Size = System::Drawing::Size(97, 24);
 			this->btnCredits->TabIndex = 29;
@@ -537,36 +542,9 @@ namespace SerialRelayer {
 			this->btnCredits->UseVisualStyleBackColor = true;
 			this->btnCredits->Click += gcnew System::EventHandler(this, &MyForm::btnCredits_Click);
 			// 
-			// textBoxPacketSize
-			// 
-			this->textBoxPacketSize->Location = System::Drawing::Point(112, 13);
-			this->textBoxPacketSize->Name = L"textBoxPacketSize";
-			this->textBoxPacketSize->Size = System::Drawing::Size(121, 20);
-			this->textBoxPacketSize->TabIndex = 30;
-			this->textBoxPacketSize->Text = L"1";
-			// 
-			// label12
-			// 
-			this->label12->AutoSize = true;
-			this->label12->Location = System::Drawing::Point(10, 17);
-			this->label12->Name = L"label12";
-			this->label12->Size = System::Drawing::Size(94, 13);
-			this->label12->TabIndex = 15;
-			this->label12->Text = L"Packet Size [Byte]";
-			// 
-			// groupBoxPacketSize
-			// 
-			this->groupBoxPacketSize->Controls->Add(this->label12);
-			this->groupBoxPacketSize->Controls->Add(this->textBoxPacketSize);
-			this->groupBoxPacketSize->Location = System::Drawing::Point(30, 210);
-			this->groupBoxPacketSize->Name = L"groupBoxPacketSize";
-			this->groupBoxPacketSize->Size = System::Drawing::Size(254, 40);
-			this->groupBoxPacketSize->TabIndex = 31;
-			this->groupBoxPacketSize->TabStop = false;
-			// 
 			// btnClearSavedData
 			// 
-			this->btnClearSavedData->Location = System::Drawing::Point(366, 460);
+			this->btnClearSavedData->Location = System::Drawing::Point(366, 430);
 			this->btnClearSavedData->Name = L"btnClearSavedData";
 			this->btnClearSavedData->Size = System::Drawing::Size(107, 24);
 			this->btnClearSavedData->TabIndex = 32;
@@ -584,7 +562,7 @@ namespace SerialRelayer {
 			// btnSaveSession
 			// 
 			this->btnSaveSession->Enabled = false;
-			this->btnSaveSession->Location = System::Drawing::Point(259, 460);
+			this->btnSaveSession->Location = System::Drawing::Point(259, 430);
 			this->btnSaveSession->Name = L"btnSaveSession";
 			this->btnSaveSession->Size = System::Drawing::Size(97, 24);
 			this->btnSaveSession->TabIndex = 33;
@@ -595,7 +573,7 @@ namespace SerialRelayer {
 			// checkBoxDisableDataRecording
 			// 
 			this->checkBoxDisableDataRecording->AutoSize = true;
-			this->checkBoxDisableDataRecording->Location = System::Drawing::Point(233, 465);
+			this->checkBoxDisableDataRecording->Location = System::Drawing::Point(233, 435);
 			this->checkBoxDisableDataRecording->Name = L"checkBoxDisableDataRecording";
 			this->checkBoxDisableDataRecording->Size = System::Drawing::Size(15, 14);
 			this->checkBoxDisableDataRecording->TabIndex = 34;
@@ -605,22 +583,31 @@ namespace SerialRelayer {
 			// label14
 			// 
 			this->label14->AutoSize = true;
-			this->label14->Location = System::Drawing::Point(111, 465);
+			this->label14->Location = System::Drawing::Point(111, 435);
 			this->label14->Name = L"label14";
 			this->label14->Size = System::Drawing::Size(120, 13);
 			this->label14->TabIndex = 35;
 			this->label14->Text = L"Disable Data Recording";
 			// 
+			// btnEditByteSections
+			// 
+			this->btnEditByteSections->Location = System::Drawing::Point(13, 162);
+			this->btnEditByteSections->Name = L"btnEditByteSections";
+			this->btnEditByteSections->Size = System::Drawing::Size(220, 30);
+			this->btnEditByteSections->TabIndex = 36;
+			this->btnEditByteSections->Text = L"Change Byte Configuration";
+			this->btnEditByteSections->UseVisualStyleBackColor = true;
+			this->btnEditByteSections->Click += gcnew System::EventHandler(this, &MyForm::btnEditByteSections_Click);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(601, 493);
+			this->ClientSize = System::Drawing::Size(601, 463);
 			this->Controls->Add(this->label14);
 			this->Controls->Add(this->checkBoxDisableDataRecording);
 			this->Controls->Add(this->btnSaveSession);
 			this->Controls->Add(this->btnClearSavedData);
-			this->Controls->Add(this->groupBoxPacketSize);
 			this->Controls->Add(this->btnCredits);
 			this->Controls->Add(this->btnResetSettings);
 			this->Controls->Add(this->btnSearchPorts);
@@ -638,8 +625,6 @@ namespace SerialRelayer {
 			this->groupBoxTX->ResumeLayout(false);
 			this->groupBoxTX->PerformLayout();
 			this->groupBox3->ResumeLayout(false);
-			this->groupBoxPacketSize->ResumeLayout(false);
-			this->groupBoxPacketSize->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -650,10 +635,14 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 	cli::array <System::String^>^ availablePorts = SerialPort::GetPortNames();
 	rxPort->Items->AddRange(availablePorts);
 	txPort->Items->AddRange(availablePorts);
+	columnNames->Add("Section0");
+	columnSizes->Add(1);
 	/*MessageBox::Show(Convert::ToString(timeStamps->Capacity), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 	MessageBox::Show(Convert::ToString(incomingData->Capacity), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);*/
 }
 private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e) {
+	packetSize = byteForm->packetSize;
+	//MessageBox::Show(columnNames[0], "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 	if(!disable->Checked){
 		if (rxPort->Text== txPort->Text){
 			MessageBox::Show("Receiver and transmitter ports can not be the same!", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
@@ -688,13 +677,12 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 		}
 
 		try {
-			serialPort1->ReceivedBytesThreshold = System::Convert::ToInt16(textBoxPacketSize->Text);
-			packetSize = System::Convert::ToInt16(textBoxPacketSize->Text);
+			serialPort1->ReceivedBytesThreshold = packetSize;
 		}
 		catch (System::ArgumentOutOfRangeException^ err) {
 			MessageBox::Show(err->Message, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			serialPort1->ReceivedBytesThreshold = 1;
-			textBoxPacketSize->Text = "1";
+			packetSize=1;
 		}
 
 	}
@@ -751,7 +739,6 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 	btnOpen->Enabled=false;
 	btnSearchPorts->Enabled = false;
 	btnResetSettings->Enabled = false;
-	groupBoxPacketSize->Enabled = false;
 	groupBoxRX->Enabled = false;
 	groupBoxTX->Enabled = false;
 
@@ -776,7 +763,6 @@ private: System::Void btnClose_Click(System::Object^ sender, System::EventArgs^ 
 	btnOpen->Enabled = true;
 	btnSearchPorts->Enabled = true;
 	btnResetSettings->Enabled = true;
-	groupBoxPacketSize->Enabled = true;
 	groupBoxRX->Enabled = true;
 	groupBoxTX->Enabled = true;
 
@@ -945,23 +931,17 @@ private: System::Void SendData(cli::array<System::Byte>^% dataIn, int size) {
 	return result;
 }*/
 private: System::Void btnClearSavedData_Click(System::Object^ sender, System::EventArgs^ e) {
-	//MessageBox::Show(Convert::ToString(incomingData->Count), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-	//MessageBox::Show(Convert::ToString(incomingData->Capacity), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 	textBoxData->Clear();
 	timeStamps->Clear();
 	incomingData->Clear();
 	incomingData = gcnew System::Collections::Generic::List<String^>;
 	timeStamps = gcnew System::Collections::Generic::List<String^>;
 	listsFull = false;
-	//MessageBox::Show(Convert::ToString(incomingData->Count), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-	//MessageBox::Show(Convert::ToString(incomingData->Capacity), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 }
 private: System::Void btnSaveSession_Click(System::Object^ sender, System::EventArgs^ e) {
-	//this->Invoke(gcnew System::EventHandler(this, &MyForm::SaveExcel));
-	//MessageBox::Show(Convert::ToString(SaveExcel()), "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 	if (saveFileDialog1->ShowDialog() == Windows::Forms::DialogResult::OK)
 	{
-		//MessageBox::Show(saveFileDialog1->FileName, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		
 		SaveExcel(msclr::interop::marshal_as<std::string>(saveFileDialog1->FileName), msclr::interop::marshal_as<std::string>(textBoxData->Text));
 	}
 }
@@ -987,6 +967,9 @@ private: System::Void checkBoxDisableDataRecording_CheckedChanged(System::Object
 		if (checkBoxDisableDataRecording->Checked)btnSaveSession->Enabled = false;
 		else btnSaveSession->Enabled = true;
 	}
+}
+private: System::Void btnEditByteSections_Click(System::Object^ sender, System::EventArgs^ e) {
+	byteForm->ShowDialog();
 }
 };
 
