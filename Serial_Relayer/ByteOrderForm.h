@@ -1,5 +1,5 @@
 #pragma once
-
+#include <msclr\marshal_cppstd.h>
 namespace SerialRelayer {
 
 	using namespace System;
@@ -8,6 +8,8 @@ namespace SerialRelayer {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::IO;
+	using namespace System::Collections::Generic;
 
 	/// <summary>
 	/// Summary for ByteOrderForm
@@ -21,6 +23,11 @@ namespace SerialRelayer {
 	private: System::Windows::Forms::Label^ labelTotalPacketSize;
 	public:
 		System::Collections::Generic::List<String^>^ columnNames;
+	private: System::Windows::Forms::Button^ btnExportConfig;
+	private: System::Windows::Forms::SaveFileDialog^ saveFileDialog1;
+	private: System::Windows::Forms::Button^ btnImportConfig;
+	private: System::Windows::Forms::OpenFileDialog^ openFileDialog1;
+	public:
 		System::Collections::Generic::List<int>^ columnSizes;
 		ByteOrderForm(System::Collections::Generic::List<String^>^ %incomingColumnNames, System::Collections::Generic::List<int>^ %incomingColumnSizes)
 		{
@@ -76,6 +83,10 @@ namespace SerialRelayer {
 			this->SectionSize = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->btnApplyChanges = (gcnew System::Windows::Forms::Button());
 			this->labelTotalPacketSize = (gcnew System::Windows::Forms::Label());
+			this->btnExportConfig = (gcnew System::Windows::Forms::Button());
+			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
+			this->btnImportConfig = (gcnew System::Windows::Forms::Button());
+			this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -143,11 +154,43 @@ namespace SerialRelayer {
 			this->labelTotalPacketSize->TabIndex = 4;
 			this->labelTotalPacketSize->Text = L"Total PacketSize: 1";
 			// 
+			// btnExportConfig
+			// 
+			this->btnExportConfig->Location = System::Drawing::Point(133, 294);
+			this->btnExportConfig->Name = L"btnExportConfig";
+			this->btnExportConfig->Size = System::Drawing::Size(86, 44);
+			this->btnExportConfig->TabIndex = 5;
+			this->btnExportConfig->Text = L"Export Configuration";
+			this->btnExportConfig->UseVisualStyleBackColor = true;
+			this->btnExportConfig->Click += gcnew System::EventHandler(this, &ByteOrderForm::btnExportConfig_Click);
+			// 
+			// saveFileDialog1
+			// 
+			this->saveFileDialog1->DefaultExt = L"txt";
+			this->saveFileDialog1->Filter = L"txt files (*.txt)|*.txt";
+			// 
+			// btnImportConfig
+			// 
+			this->btnImportConfig->Location = System::Drawing::Point(18, 294);
+			this->btnImportConfig->Name = L"btnImportConfig";
+			this->btnImportConfig->Size = System::Drawing::Size(86, 44);
+			this->btnImportConfig->TabIndex = 6;
+			this->btnImportConfig->Text = L"Import Configuration";
+			this->btnImportConfig->UseVisualStyleBackColor = true;
+			this->btnImportConfig->Click += gcnew System::EventHandler(this, &ByteOrderForm::btnImportConfig_Click);
+			// 
+			// openFileDialog1
+			// 
+			this->openFileDialog1->FileName = L"openFileDialog1";
+			this->openFileDialog1->Filter = L"txt files (*.txt)|*.txt";
+			// 
 			// ByteOrderForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(241, 300);
+			this->ClientSize = System::Drawing::Size(241, 350);
+			this->Controls->Add(this->btnImportConfig);
+			this->Controls->Add(this->btnExportConfig);
 			this->Controls->Add(this->labelTotalPacketSize);
 			this->Controls->Add(this->btnApplyChanges);
 			this->Controls->Add(this->dataGridView1);
@@ -167,6 +210,75 @@ private: System::Void ByteOrderForm_Load(System::Object^ sender, System::EventAr
 }
 
 private: System::Void btnApplyChanges_Click(System::Object^ sender, System::EventArgs^ e) {
+	applyChangesFunction();
+}
+private: System::Void btnExportConfig_Click(System::Object^ sender, System::EventArgs^ e) {
+	/*if (applyChangesFunction()) {
+		if (saveFileDialog1->ShowDialog() == Windows::Forms::DialogResult::OK)
+		{
+			ExportConfig(msclr::interop::marshal_as<std::string>(saveFileDialog1->FileName));
+		}
+	}*/
+	
+	if (saveFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			StreamWriter^ configOutStream=gcnew StreamWriter(saveFileDialog1->FileName);
+			configOutStream->WriteLine(sectionCount);
+			for (int i = 0;i < sectionCount;i++) {
+				configOutStream->WriteLine(columnNames[i]);
+				configOutStream->WriteLine(columnSizes[i]);
+			}
+			configOutStream->Close();
+	}
+
+}
+private: System::Void btnImportConfig_Click(System::Object^ sender, System::EventArgs^ e) {
+	/*if (openFileDialog1->ShowDialog() == Windows::Forms::DialogResult::OK)
+	{
+			ImportConfig(msclr::interop::marshal_as<std::string>(saveFileDialog1->FileName));
+
+	}*/
+	StreamReader^ configImportStream;
+	try {
+		if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			if ((configImportStream = File::OpenText(openFileDialog1->FileName)) != nullptr) {
+				//MessageBox::Show("Found");
+				textBoxSectionNumber->Text = configImportStream->ReadLine();
+				if (applyChangesFunction()) {
+					for (int i = 0;i < dataGridView1->RowCount;i++) {
+						dataGridView1->Rows[i]->Cells[0]->Value = configImportStream->ReadLine();
+						dataGridView1->Rows[i]->Cells[1]->Value = configImportStream->ReadLine();
+					}
+				}
+				configImportStream->Close();
+			}
+			else { configImportStream->Close(); }
+		}
+	}
+	catch (Exception^ e)
+	{
+		if (dynamic_cast<UnauthorizedAccessException^>(e))
+			MessageBox::Show(e->Message, "You don't have the authority ", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		if (dynamic_cast<ArgumentNullException^>(e))
+			MessageBox::Show(e->Message, "Path is null", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		if (dynamic_cast<ArgumentException^>(e))
+			MessageBox::Show(e->Message, "Path name is empty string / contains invalid characters/ consists of only white space", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		if (dynamic_cast<PathTooLongException^>(e))
+			MessageBox::Show(e->Message, "Path Name Is Too Long", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		if (dynamic_cast<DirectoryNotFoundException^>(e))
+			MessageBox::Show(e->Message, "Invalid Path", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		if (dynamic_cast<FileNotFoundException^>(e))
+			MessageBox::Show(e->Message, "Path Not Found ", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		if (dynamic_cast<NotSupportedException^>(e))
+			MessageBox::Show(e->Message, "Invalid Path Format", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		if(dynamic_cast<OutOfMemoryException^>(e))
+			MessageBox::Show(e->Message, "Mnsufficient Memory", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		if (dynamic_cast<IOException^>(e))
+			MessageBox::Show(e->Message, "An I/O Exception Occured", MessageBoxButtons::OK, MessageBoxIcon::Error);
+	}
+}
+//private: void ExportConfig(std::string& filePath);
+//private: void ImportConfig(std::string& filePath);
+private: bool applyChangesFunction() {
 	if (textBoxSectionNumber->Text->Length < 1) {
 		MessageBox::Show("Section Size can not be empty", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 	}
@@ -174,16 +286,16 @@ private: System::Void btnApplyChanges_Click(System::Object^ sender, System::Even
 		if (Convert::ToInt32(textBoxSectionNumber->Text) < 1) {
 			MessageBox::Show("Size has to be at least 1", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
 			textBoxSectionNumber->Text = Convert::ToString(sectionCount);
-			return;
+			return false;
 		}
 	}
 	catch (System::FormatException^) {
 		MessageBox::Show("Section Number can only contain numbers", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-		return;
+		return false;
 	}
 	catch (System::OverflowException^) {
 		MessageBox::Show("Section Number too big/small", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-		return;
+		return false;
 	}
 
 	int lastSectionCount = sectionCount;
@@ -196,29 +308,28 @@ private: System::Void btnApplyChanges_Click(System::Object^ sender, System::Even
 		}
 	}
 	else if (lastSectionCount > sectionCount) {
-		for (int i = lastSectionCount-1;i >= sectionCount;i--) {
+		for (int i = lastSectionCount - 1;i >= sectionCount;i--) {
 			dataGridView1->Rows->RemoveAt(i);
 		}
 	}
 	int tempPacketSize = 0;
 	for (int i = 0; i < dataGridView1->RowCount;i++) {
 		try {
-			if (Convert::ToInt32(dataGridView1->Rows[i]->Cells[1]->Value) < 1){
+			if (Convert::ToInt32(dataGridView1->Rows[i]->Cells[1]->Value) < 1) {
 				MessageBox::Show("No section's size can be less than 1", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			return;
+				return false;
 			}
 		}
 		catch (System::FormatException^) {
 			MessageBox::Show("Section Sizes can only contain numbers", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			return;
+			return false;
 		}
 		catch (System::OverflowException^) {
 			MessageBox::Show("Section Sizes too big/small", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			return;
+			return false;
 		}
 		tempPacketSize += Convert::ToInt32(dataGridView1->Rows[i]->Cells[1]->Value);
 	}
-	//delete parsedValue;
 	packetSize = tempPacketSize;
 	columnNames->Clear();
 	columnSizes->Clear();
@@ -227,9 +338,8 @@ private: System::Void btnApplyChanges_Click(System::Object^ sender, System::Even
 		columnSizes->Add(Convert::ToInt32(dataGridView1->Rows[i]->Cells[1]->Value));
 	}
 	labelTotalPacketSize->Text = "Total Packet Size" + Convert::ToString(packetSize);
+	return true;
+}
 
-}
-private: System::Void ByteOrderForm_FormClosing(System::Object^ sender, System::Windows::Forms::FormClosingEventArgs^ e) {
-}
 };
 }

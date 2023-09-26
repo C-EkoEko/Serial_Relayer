@@ -14,7 +14,7 @@ void main(){ //array<String^>^ args
 	Application::Run(%form);
 	return;
 }
-void SerialRelayer::MyForm::SaveExcel(std::string &filePath, std::string &text) {
+void SerialRelayer::MyForm::SaveExcel(std::string& filePath, std::string& text) {
 	std::ofstream excelFile;
 	excelFile.open(filePath,std::ios::trunc);
 	int listDataSize = incomingData->Count;

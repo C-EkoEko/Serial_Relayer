@@ -34,7 +34,7 @@ namespace SerialRelayer {
 			//
 			//TODO: Oluþturucu kodunu buraya ekle
 			//
-			//packetSize = 1;
+			packetSize = 1;
 			listsFull = false;
 			canCommunicate = false;
 			byteForm = gcnew ByteOrderForm(columnNames, columnSizes);
@@ -741,7 +741,7 @@ private: System::Void btnOpen_Click(System::Object^ sender, System::EventArgs^ e
 	btnResetSettings->Enabled = false;
 	groupBoxRX->Enabled = false;
 	groupBoxTX->Enabled = false;
-
+	btnEditByteSections->Enabled = false;
 	btnClose->Enabled = true;
 	btnStartStopComm->Enabled = true;
 	if (checkBoxDisableDataRecording->Checked == false)btnSaveSession->Enabled = true;
@@ -765,7 +765,7 @@ private: System::Void btnClose_Click(System::Object^ sender, System::EventArgs^ 
 	btnResetSettings->Enabled = true;
 	groupBoxRX->Enabled = true;
 	groupBoxTX->Enabled = true;
-
+	btnEditByteSections->Enabled = true;
 	btnClose->Enabled = false;
 	btnStartStopComm->Enabled = false;
 	btnSaveSession->Enabled = false;
@@ -851,6 +851,9 @@ private: System::Void MyForm_FormClosing(System::Object^ sender, System::Windows
 	delete listsFull;
 	delete timeStamps;
 	delete incomingData;
+	delete columnNames;
+	delete columnSizes;
+	delete byteForm;
 	//delete serialPort1;
 	//delete serialPort2;
 }
@@ -941,7 +944,6 @@ private: System::Void btnClearSavedData_Click(System::Object^ sender, System::Ev
 private: System::Void btnSaveSession_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (saveFileDialog1->ShowDialog() == Windows::Forms::DialogResult::OK)
 	{
-		
 		SaveExcel(msclr::interop::marshal_as<std::string>(saveFileDialog1->FileName), msclr::interop::marshal_as<std::string>(textBoxData->Text));
 	}
 }
