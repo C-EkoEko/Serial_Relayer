@@ -35,10 +35,10 @@ namespace SerialRelayer {
 			}
 		}
 	private: System::Windows::Forms::Label^ label1;
-	private: System::Windows::Forms::Label^ label2;
+
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::Label^ label4;
-	private: System::Windows::Forms::Label^ label5;
+
 	private: System::Windows::Forms::Label^ label6;
 	protected:
 
@@ -56,10 +56,8 @@ namespace SerialRelayer {
 		void InitializeComponent(void)
 		{
 			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
-			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
@@ -73,19 +71,10 @@ namespace SerialRelayer {
 			this->label1->Text = L"Çýnar Ekin Algül";
 			this->label1->Click += gcnew System::EventHandler(this, &Credits::label1_Click);
 			// 
-			// label2
-			// 
-			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(136, 37);
-			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(37, 13);
-			this->label2->TabIndex = 1;
-			this->label2->Text = L"165/A";
-			// 
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(200, 37);
+			this->label3->Location = System::Drawing::Point(150, 37);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(76, 13);
 			this->label3->TabIndex = 2;
@@ -97,23 +86,12 @@ namespace SerialRelayer {
 			this->label4->AutoSize = true;
 			this->label4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(162)));
-			this->label4->Location = System::Drawing::Point(200, 9);
+			this->label4->Location = System::Drawing::Point(150, 9);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(69, 13);
 			this->label4->TabIndex = 5;
 			this->label4->Text = L"Generation";
 			this->label4->Click += gcnew System::EventHandler(this, &Credits::label4_Click);
-			// 
-			// label5
-			// 
-			this->label5->AutoSize = true;
-			this->label5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(162)));
-			this->label5->Location = System::Drawing::Point(136, 9);
-			this->label5->Name = L"label5";
-			this->label5->Size = System::Drawing::Size(35, 13);
-			this->label5->TabIndex = 4;
-			this->label5->Text = L"Term";
 			// 
 			// label6
 			// 
@@ -132,10 +110,8 @@ namespace SerialRelayer {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(303, 87);
 			this->Controls->Add(this->label4);
-			this->Controls->Add(this->label5);
 			this->Controls->Add(this->label6);
 			this->Controls->Add(this->label3);
-			this->Controls->Add(this->label2);
 			this->Controls->Add(this->label1);
 			this->Name = L"Credits";
 			this->Text = L"Credits";

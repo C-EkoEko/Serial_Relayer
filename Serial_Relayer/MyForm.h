@@ -878,24 +878,28 @@ private: System::Void disable_CheckedChanged(System::Object^ sender, System::Eve
 }
 private: System::Void serialPort1_DataReceived(System::Object^ sender, System::IO::Ports::SerialDataReceivedEventArgs^ e) {
 	if(!(canCommunicate->CompareTo(true))&& !(listsFull->CompareTo(false)))this->Invoke(gcnew System::EventHandler(this, &MyForm::ShowData));//artýk gerekmeyebilir kontrol et
+	
 }
 private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
+	//textBoxData->AppendText("test")
 	cli::array<System::Byte>^ dataIn = gcnew cli::array<System::Byte>(packetSize);
 
 	System::DateTime currTime = System::DateTime::Now;
 	System::String^ tempTimeStr= currTime.ToLongTimeString() + "." + currTime.Millisecond;
 	System::String^ tempDataStr;
+	System::String^ tempOutputDataStr;
 
 	/*if (checkBoxShowTime->Checked) {
 		textBoxData->Text += tempStr + " ->	";
 	}*/
 	serialPort1->Read(dataIn, 0, packetSize);
+	int test = 0;
 	for (int i = 0; i < packetSize; i++) {
-		//textBoxData->AppendText("[");
+		tempOutputDataStr += "[" + System::String::Format("{0:X2}", dataIn[i]) + "]";
 		tempDataStr += System::String::Format("{0:X2}", dataIn[i]);
-		//textBoxData->Text += "]";
+		
 	}
-	textBoxData->Text=tempDataStr;
+	textBoxData->Text = tempOutputDataStr;
 	try {
 		if (checkBoxDisableDataRecording->Checked==false) {
 			timeStamps->Add(tempTimeStr);
@@ -916,11 +920,13 @@ private: System::Void ShowData(System::Object^ sender, System::EventArgs^ e) {
 	if (!(disable->Checked)) {
 		SendData(dataIn, packetSize);
 	}
+	//textBoxData->Text=System::String::Format("{0:X2}", serialPort1->ReadExisting());
+
 	delete dataIn;
 	delete currTime;
 	delete tempTimeStr;
 	delete tempDataStr;
-	
+	delete tempOutputDataStr;
 }
 private: System::Void SendData(cli::array<System::Byte>^% dataIn, int size) {
 	serialPort2->Write(dataIn,0,size);

@@ -34,8 +34,13 @@ void SerialRelayer::MyForm::SaveExcel(std::string& filePath, std::string& text) 
 		//excelFile<<';'<< msclr::interop::marshal_as<std::string>(incomingData[i]) <<'\n';
 		for (int j = 0;j < columnCount;j++) {
 			tempstr2 = "";
-			for (int k = 0;k < columnSizes[j]*2&&currIndex<(int)tempStr.size();k++,currIndex++) {//*2 bir byte hex iken 2 sembol ile gösterildiðinden
-				tempstr2 += tempStr[currIndex];
+			for (int k = 0;k < columnSizes[j];k++) {//*2 bir byte hex iken 2 sembol ile gösterildiðinden
+				tempstr2 += "[";
+				for (int z = 0;z < 2 && currIndex < (int)tempStr.size();z++,currIndex++) {
+					tempstr2 += tempStr[currIndex];
+				}
+				tempstr2 += "]";
+				
 			}
 			excelFile << ';'<<tempstr2;
 		}
