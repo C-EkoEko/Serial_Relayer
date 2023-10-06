@@ -16,7 +16,8 @@ This how many sections each of your packages consists of. However this doesn't h
 As an example, let's say you are receiving an 9-byte array: first byte is a char indicating your name's first letter, next two bytes are a short int counting from zero to 32767, last 4 bytes are a float coming from a temperature sensor.
 In this case, if you want them to be seperated and named when saved, byte configuration should look like this: (Don't forget to click the "Apply Changes" button)
 
-*Add Image*
+![image](https://github.com/C-EkoEko/Serial_Relayer/assets/110466108/b9691321-6d93-4a1f-b1c4-007d205a3015)
+
 
 And saved data will look like this (Time stamp is added automatically):
 
