@@ -1,6 +1,6 @@
 # Serial_Relayer
 A Windows application to monitor, save, and relay incoming data from a COM port to another.
-The one thing that seperates thiss app from others is that you should know the number of bytes received in each transmission. 
+The one thing that seperates this app from others is that you should know the number of bytes received in each transmission. 
 Otherwise data will not be recorded and saved in proper order.
 
 ## Receiver Port
@@ -9,10 +9,10 @@ As you can tell Receiver Port is the COM port that receives data (from an Arduin
 Choose the COM Port you want to read data from. And set Baud Rate, Data Bits, Stop Bits, and Parity parameters.
 
 ### Change Byte Configuration
-This is where you set the number of bytes you are receiving (will be refered as package) in each transmission.
+This is where you set the number of bytes you are receiving (will be referred as package) in each transmission.
 
 #### Number of Sections
-This how many sections each of your packages consists of. However this doesn't have any effect on reading or transmitting data, it only effects how the data is saved to the computer.
+This is how many sections each of your packages consists of. However this doesn't have any effect on reading or transmitting data, it only effects how the data is saved to the computer.
 As an example, let's say you are receiving an 9-byte array: first byte is a char indicating your name's first letter, next two bytes are a short int counting from zero to 32767, last 4 bytes are a float coming from a temperature sensor.
 In this case, if you want them to be seperated and named when saved, byte configuration should look like this: (Don't forget to click the "Apply Changes" button)
 
@@ -25,7 +25,7 @@ And saved data will look like this (Time stamp is added automatically):
 
 #### Export Configuration
 Each time you open the app Byte Configuration will be reseted.
-If you are going to use the same configuration multiple times and don't want write configuration again, you can save the configuration as a .txt file.
+If you are going to use the same configuration multiple times and don't want to write the configuration again, you can save the configuration as a .txt file.
 Just click the "Export Configuration Button" and choose location. Saved file is meant to be human-readible (definitely not because I didn't want work more).
 You can open it and find out the logic easily and change the content according to will. 
 
